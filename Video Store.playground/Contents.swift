@@ -45,6 +45,14 @@ class Rental {
         
         return result
     }
+    
+    func getFrequentRentalPoints() -> Int {
+        var frequentRenterPoints = 1
+        if movie.priceCode == Movie.newRelease && daysRented > 1 {
+            frequentRenterPoints += 1
+        }
+        return frequentRenterPoints
+    }
 }
 
 class Customer {
@@ -63,19 +71,16 @@ class Customer {
     var statement: String {
         var totalAmount: Double = 0
         var frequentRenterPoints = 0
-        var result = "Rental Records for \(name) \n"
+        var result = "Rental Records for \(name)\n"
         for rental in rentals {
             
-            frequentRenterPoints += 1
-            if rental.movie.priceCode == Movie.newRelease && rental.daysRented > 1 {
-                frequentRenterPoints += 1
-            }
+            frequentRenterPoints += rental.getFrequentRentalPoints()
             
             result += "\t\(rental.movie.title)\t\(rental.getCharge())\n"
             totalAmount += rental.getCharge()
         }
         
-        result += "Amount owed is \(totalAmount) \n"
+        result += "Amount owed is \(totalAmount)\n"
         result += "You earned \(frequentRenterPoints) frequent renter points"
         return result
     }
@@ -95,6 +100,18 @@ let rentals = [rental1, rental2, rental3, rental4]
 
 let customer = Customer(name: "Mihaita", rentals: rentals)
 print(customer.statement)
+
+let statement = """
+Rental Records for Mihaita
+\tAvatar\t6.5
+\tDexter\t9.5
+\tBohemian Rapsody\t6.0
+\tAnimals\t12.0
+Amount owed is 34.0
+You earned 5 frequent renter points
+"""
+
+print(customer.statement == statement)
 
 
 
