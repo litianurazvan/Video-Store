@@ -23,7 +23,7 @@ class Rental {
         self.daysRented = daysRented
     }
     
-    func getCost() -> Double {
+    func getCharge() -> Double {
         var result: Double = 0
         
         switch movie.priceCode {
@@ -65,17 +65,14 @@ class Customer {
         var frequentRenterPoints = 0
         var result = "Rental Records for \(name) \n"
         for rental in rentals {
-            var thisAmount: Double = 0
-            
-            thisAmount += rental.getCost()
             
             frequentRenterPoints += 1
             if rental.movie.priceCode == Movie.newRelease && rental.daysRented > 1 {
                 frequentRenterPoints += 1
             }
             
-            result += "\t\(rental.movie.title)\t\(thisAmount)\n"
-            totalAmount += thisAmount
+            result += "\t\(rental.movie.title)\t\(rental.getCharge())\n"
+            totalAmount += rental.getCharge()
         }
         
         result += "Amount owed is \(totalAmount) \n"
