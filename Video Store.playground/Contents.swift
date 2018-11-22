@@ -22,6 +22,29 @@ class Rental {
         self.movie = movie
         self.daysRented = daysRented
     }
+    
+    func getCost() -> Double {
+        var result: Double = 0
+        
+        switch movie.priceCode {
+        case Movie.regular:
+            result += 2
+            if daysRented > 2 {
+                result += Double(daysRented - 2) * 1.5
+            }
+        case Movie.newRelease:
+            result += Double(daysRented) * 3
+        case Movie.childrens:
+            result += 1.5
+            if daysRented > 3 {
+                result += Double(daysRented - 3) * 1.5
+            }
+        default:
+            break
+        }
+        
+        return result
+    }
 }
 
 class Customer {
@@ -44,7 +67,7 @@ class Customer {
         for rental in rentals {
             var thisAmount: Double = 0
             
-            thisAmount += amount(for: rental)
+            thisAmount += rental.getCost()
             
             frequentRenterPoints += 1
             if rental.movie.priceCode == Movie.newRelease && rental.daysRented > 1 {
@@ -58,29 +81,6 @@ class Customer {
         result += "Amount owed is \(totalAmount) \n"
         result += "You earned \(frequentRenterPoints) frequent renter points"
         return result
-    }
-    
-    func amount(for rental: Rental) -> Double {
-        var thisAmount: Double = 0
-        
-        switch rental.movie.priceCode {
-        case Movie.regular:
-            thisAmount += 2
-            if rental.daysRented > 2 {
-                thisAmount += Double(rental.daysRented - 2) * 1.5
-            }
-        case Movie.newRelease:
-            thisAmount += Double(rental.daysRented) * 3
-        case Movie.childrens:
-            thisAmount += 1.5
-            if rental.daysRented > 3 {
-                thisAmount += Double(rental.daysRented - 3) * 1.5
-            }
-        default:
-            break
-        }
-        
-        return thisAmount
     }
 }
 
