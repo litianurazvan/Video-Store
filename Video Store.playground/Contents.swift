@@ -47,11 +47,11 @@ class Rental {
     }
     
     func getFrequentRentalPoints() -> Int {
-        var frequentRenterPoints = 1
         if movie.priceCode == Movie.newRelease && daysRented > 1 {
-            frequentRenterPoints += 1
+            return 2
+        } else {
+            return 1
         }
-        return frequentRenterPoints
     }
 }
 
