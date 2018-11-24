@@ -12,21 +12,11 @@ public class Movie {
         self.title = title
         self.priceCode = priceCode
     }
-}
-
-class Rental {
-    let movie: Movie
-    let daysRented: Int
     
-    init(movie: Movie, daysRented: Int) {
-        self.movie = movie
-        self.daysRented = daysRented
-    }
-    
-    func getCharge() -> Double {
+    func getCharge(daysRented: Int) -> Double {
         var result: Double = 0
         
-        switch movie.priceCode {
+        switch priceCode {
         case Movie.regular:
             result += 2
             if daysRented > 2 {
@@ -46,12 +36,30 @@ class Rental {
         return result
     }
     
-    func getFrequentRentalPoints() -> Int {
-        if movie.priceCode == Movie.newRelease && daysRented > 1 {
+    func getFrequentRentalPoints(daysRented: Int) -> Int {
+        if priceCode == Movie.newRelease && daysRented > 1 {
             return 2
         } else {
             return 1
         }
+    }
+}
+
+class Rental {
+    let movie: Movie
+    let daysRented: Int
+    
+    init(movie: Movie, daysRented: Int) {
+        self.movie = movie
+        self.daysRented = daysRented
+    }
+    
+    func getCharge() -> Double {
+        return movie.getCharge(daysRented: daysRented)
+    }
+    
+    func getFrequentRentalPoints() -> Int {
+        return movie.getFrequentRentalPoints(daysRented: daysRented)
     }
 }
 
@@ -69,20 +77,30 @@ class Customer {
     }
     
     var statement: String {
-        var totalAmount: Double = 0
-        var frequentRenterPoints = 0
         var result = "Rental Records for \(name)\n"
         for rental in rentals {
-            
-            frequentRenterPoints += rental.getFrequentRentalPoints()
-            
             result += "\t\(rental.movie.title)\t\(rental.getCharge())\n"
-            totalAmount += rental.getCharge()
         }
         
-        result += "Amount owed is \(totalAmount)\n"
+        result += "Amount owed is \(totalCharge)\n"
         result += "You earned \(frequentRenterPoints) frequent renter points"
         return result
+    }
+    
+    var totalCharge: Double {
+        var result: Double = 0
+        for rental in rentals {
+            result += rental.getCharge()
+        }
+        return result
+    }
+    
+    var frequentRenterPoints: Int {
+        var frequentRenterPoints = 0
+        for rental in rentals {
+            frequentRenterPoints += rental.getFrequentRentalPoints()
+        }
+        return frequentRenterPoints
     }
 }
 
