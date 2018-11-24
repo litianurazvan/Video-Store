@@ -1,47 +1,72 @@
 import Foundation
 
+protocol Price {
+    var priceCode: Int { get }
+    func getCharge(daysRented: Int) -> Double
+    func getFrequentRentalPoints(daysRented: Int) -> Int
+}
+
+extension Price {
+    func getFrequentRentalPoints(daysRented: Int) -> Int {
+        return 1
+    }
+}
+
+class RegularPrice: Price {
+    var priceCode: Int = Movie.regular
+    
+    func getCharge(daysRented: Int) -> Double {
+        var result: Double = 2
+        if daysRented > 2 {
+            result += Double(daysRented - 2) * 1.5
+        }
+        return result
+    }
+}
+
+class ChildrenPrice: Price {
+    var priceCode: Int = Movie.childrens
+    
+    func getCharge(daysRented: Int) -> Double {
+        var result = 1.5
+        if daysRented > 3 {
+            result += Double(daysRented - 3) * 1.5
+        }
+        return result
+    }
+}
+
+class NewReleasePrice: Price {
+    var priceCode: Int = Movie.newRelease
+    
+    func getCharge(daysRented: Int) -> Double {
+        return Double(daysRented) * 3
+    }
+    
+    func getFrequentRentalPoints(daysRented: Int) -> Int {
+        return (daysRented > 1) ? 2 : 1
+    }
+}
+
 public class Movie {
     public static let childrens = 2
     public static let newRelease = 1
     public static let regular = 0
     
     let title: String
-    var priceCode: Int
+    private let price: Price
     
-    init(title: String, priceCode: Int) {
+    init(title: String, price: Price) {
         self.title = title
-        self.priceCode = priceCode
+        self.price = price
     }
     
     func getCharge(daysRented: Int) -> Double {
-        var result: Double = 0
-        
-        switch priceCode {
-        case Movie.regular:
-            result += 2
-            if daysRented > 2 {
-                result += Double(daysRented - 2) * 1.5
-            }
-        case Movie.newRelease:
-            result += Double(daysRented) * 3
-        case Movie.childrens:
-            result += 1.5
-            if daysRented > 3 {
-                result += Double(daysRented - 3) * 1.5
-            }
-        default:
-            break
-        }
-        
-        return result
+        return price.getCharge(daysRented: daysRented)
     }
     
     func getFrequentRentalPoints(daysRented: Int) -> Int {
-        if priceCode == Movie.newRelease && daysRented > 1 {
-            return 2
-        } else {
-            return 1
-        }
+        return price.getFrequentRentalPoints(daysRented: daysRented)
     }
 }
 
@@ -104,10 +129,10 @@ class Customer {
     }
 }
 
-let avatar = Movie(title: "Avatar", priceCode: Movie.regular)
-let dexter = Movie(title: "Dexter", priceCode: Movie.regular)
-let bohemianRapsody = Movie(title: "Bohemian Rapsody", priceCode: Movie.newRelease)
-let animals = Movie(title: "Animals", priceCode: Movie.childrens)
+let avatar = Movie(title: "Avatar", price: RegularPrice())
+let dexter = Movie(title: "Dexter", price: RegularPrice())
+let bohemianRapsody = Movie(title: "Bohemian Rapsody", price: NewReleasePrice())
+let animals = Movie(title: "Animals", price: ChildrenPrice())
 
 let rental1 = Rental(movie: avatar, daysRented: 5)
 let rental2 =  Rental(movie: dexter, daysRented: 7)
@@ -128,6 +153,8 @@ Rental Records for Mihaita
 Amount owed is 34.0
 You earned 5 frequent renter points
 """
+
+print(statement)
 
 print(customer.statement == statement)
 
